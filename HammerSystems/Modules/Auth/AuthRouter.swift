@@ -10,10 +10,10 @@ import UIKit
 
 
 final class AuthRouter: AuthRouterProtocol  {
-   
-weak var viewController: UIViewController?
+    var viewController: UIViewController?
     
-    func show() {
-        print("123")
+    func showHomeScreen() {
+        let homeVC = HomeBuilder.build()
+        viewController?.navigationController?.pushViewController(homeVC, animated: true)
     }
 }
