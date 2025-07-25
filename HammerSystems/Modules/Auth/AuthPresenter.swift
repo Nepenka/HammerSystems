@@ -16,7 +16,8 @@ final class AuthPresenter: AuthPresenterProtocol {
     
     func login(username: String?, password: String?) {
         
-        if username == "Qwerty123" && password == "Qwerty123" {
+        if username == "123" && password == "123" {
+            AuthStorage.isLoggedIn = true
             router?.showHomeScreen()
         } else {
             view?.showBanner(

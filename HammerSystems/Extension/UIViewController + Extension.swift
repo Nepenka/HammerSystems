@@ -24,10 +24,12 @@ extension UIViewController {
     //MARK: - Уведомление о правильном входе
     func showAuthBanner(message: String, iconName: String, color: UIColor) {
         let banner = AuthAlertBanner(message: message, iconName: iconName, backgroundColor: color)
-        view.addSubview(banner)
+       
+        guard let window = UIApplication.shared.windows.first(where: { $0.isKeyWindow }) else { return }
+        window.addSubview(banner)
         
         banner.snp.makeConstraints { baner in
-            baner.top.equalTo(view.safeAreaLayoutGuide).offset(-60)
+            baner.top.equalTo(window.safeAreaLayoutGuide).offset(-60)
             baner.centerX.equalToSuperview()
             baner.height.equalTo(50)
             baner.right.left.equalToSuperview().inset(25)
