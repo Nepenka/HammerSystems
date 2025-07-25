@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		36BA69C72E3193D40067ED34 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 36BA69C62E3193D40067ED34 /* Alamofire */; };
 		36BA69CA2E3193E40067ED34 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 36BA69C92E3193E40067ED34 /* SnapKit */; };
+		36BA6A382E339F530067ED34 /* AlamofireImage in Frameworks */ = {isa = PBXBuildFile; productRef = 36BA6A372E339F530067ED34 /* AlamofireImage */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -43,6 +44,7 @@
 			files = (
 				36BA69C72E3193D40067ED34 /* Alamofire in Frameworks */,
 				36BA69CA2E3193E40067ED34 /* SnapKit in Frameworks */,
+				36BA6A382E339F530067ED34 /* AlamofireImage in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -87,6 +89,7 @@
 			packageProductDependencies = (
 				36BA69C62E3193D40067ED34 /* Alamofire */,
 				36BA69C92E3193E40067ED34 /* SnapKit */,
+				36BA6A372E339F530067ED34 /* AlamofireImage */,
 			);
 			productName = HammerSystems;
 			productReference = 36BA69902E318EE60067ED34 /* HammerSystems.app */;
@@ -119,6 +122,7 @@
 			packageReferences = (
 				36BA69C52E3193D40067ED34 /* XCRemoteSwiftPackageReference "Alamofire" */,
 				36BA69C82E3193E40067ED34 /* XCRemoteSwiftPackageReference "SnapKit" */,
+				36BA6A362E339F530067ED34 /* XCRemoteSwiftPackageReference "AlamofireImage" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 36BA69912E318EE60067ED34 /* Products */;
@@ -368,6 +372,14 @@
 				minimumVersion = 5.7.1;
 			};
 		};
+		36BA6A362E339F530067ED34 /* XCRemoteSwiftPackageReference "AlamofireImage" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Alamofire/AlamofireImage.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.3.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -380,6 +392,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 36BA69C82E3193E40067ED34 /* XCRemoteSwiftPackageReference "SnapKit" */;
 			productName = SnapKit;
+		};
+		36BA6A372E339F530067ED34 /* AlamofireImage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 36BA6A362E339F530067ED34 /* XCRemoteSwiftPackageReference "AlamofireImage" */;
+			productName = AlamofireImage;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

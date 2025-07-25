@@ -21,4 +21,17 @@ struct CategoryResponse: Decodable {
 }
 
 
+struct SubMenuResponse: Decodable {
+    let status: Bool
+    let menuList: [Dish]
+}
+
+
+struct Dish: Decodable {
+    let id: String
+    let image: String
+    let name: String
+    let content: String
+    let price: String
+}
 
