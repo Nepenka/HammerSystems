@@ -13,6 +13,9 @@ final class CategoryDataSource: NSObject {
     var categories: [CategoryModel] = []
     var selectedIndex: Int = 0
     var onSelect: ((CategoryModel, Int) -> Void)?
+    weak var presenter: HomePresenter?
+    weak var tableView: UITableView?
+    var dishDataSource: DishDataSource?
 }
 
 extension CategoryDataSource: UICollectionViewDataSource, UICollectionViewDelegate {
@@ -34,9 +37,20 @@ extension CategoryDataSource: UICollectionViewDataSource, UICollectionViewDelega
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         selectedIndex = indexPath.item
-        collectionView.reloadData() 
-        
+        collectionView.reloadData()
+
         let selectedCategory = categories[indexPath.item]
-        onSelect?(selectedCategory, indexPath.item)
+        
+        presenter?.fetchSubMenu(for: selectedCategory) { [weak self] in
+            guard let self else { return }
+            let dishes = presenter?.getDishes(for: selectedCategory.menuID) ?? []
+            
+            self.dishDataSource?.dishesByCategory = [dishes]
+            self.dishDataSource?.categories = [selectedCategory]
+            
+            DispatchQueue.main.async {
+                self.tableView?.reloadData()
+            }
+        }
     }
 }

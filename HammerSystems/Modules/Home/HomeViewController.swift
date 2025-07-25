@@ -19,6 +19,17 @@ final class HomeViewController: UIViewController, HomeViewProtocol {
     private var currentIndex = 0
     private var timer: Timer?
     private let categoryDataSource = CategoryDataSource()
+    private let dishDataSource = DishDataSource()
+    private let stickyCategoriesContainer: UIView = {
+        let view = UIView()
+        view.backgroundColor = .white
+        view.isHidden = true
+        return view
+    }()
+    private var stickyCategoriesTopConstraint: Constraint?
+    private var originalCategoriesFrame: CGRect = .zero
+    var lastContentOffset: CGFloat = 0
+   
     
     
     private let cityLabel: UILabel = {
@@ -41,6 +52,7 @@ final class HomeViewController: UIViewController, HomeViewProtocol {
         collectionView.isPagingEnabled = true
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.layer.cornerRadius = 15
+        collectionView.backgroundColor = .white
         collectionView.register(BannerCell.self, forCellWithReuseIdentifier: "BannerCell")
         collectionView.dataSource = self
         collectionView.delegate = self
@@ -61,6 +73,17 @@ final class HomeViewController: UIViewController, HomeViewProtocol {
         collectionView.delegate = self
         return collectionView
     }()
+    
+    private let tableView: UITableView = {
+        let tableView = UITableView()
+        tableView.separatorStyle = .none
+        tableView.showsVerticalScrollIndicator = false
+        tableView.register(DishCell.self, forCellReuseIdentifier: "DishCell")
+        tableView.backgroundView = UIView()
+        
+        tableView.backgroundView?.backgroundColor = .white
+        return tableView
+    }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -79,12 +102,20 @@ final class HomeViewController: UIViewController, HomeViewProtocol {
         startAutoScroll()
         categoryCollectionView.dataSource = categoryDataSource
         categoryCollectionView.delegate = categoryDataSource
+        tableView.dataSource = dishDataSource
+        tableView.delegate = dishDataSource
+        categoryDataSource.presenter = presenter as? HomePresenter
+        categoryDataSource.tableView = tableView
+        categoryDataSource.dishDataSource = dishDataSource
+        dishDataSource.homeViewController = self
     }
     
     private func setupUI() {
         view.addSubview(cityLabel)
         view.addSubview(bannerCollectionView)
         view.addSubview(categoryCollectionView)
+        view.addSubview(tableView)
+        view.addSubview(stickyCategoriesContainer)
 
         cityLabel.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(12)
@@ -97,10 +128,21 @@ final class HomeViewController: UIViewController, HomeViewProtocol {
             banner.height.equalTo(180)
         }
         
-        categoryCollectionView.snp.makeConstraints { make in
-            make.top.equalTo(bannerCollectionView.snp.bottom).offset(20)
-            make.leading.trailing.equalToSuperview().inset(20)
-            make.height.equalTo(50)
+        categoryCollectionView.snp.makeConstraints { category in
+            category.top.equalTo(bannerCollectionView.snp.bottom).offset(20).priority(.high)
+            category.leading.trailing.equalToSuperview().inset(20)
+            category.height.equalTo(50)
+        }
+        
+        tableView.snp.makeConstraints { table in
+            table.top.equalTo(categoryCollectionView.snp.bottom).offset(12)
+            table.leading.trailing.bottom.equalToSuperview()
+        }
+        
+        stickyCategoriesContainer.snp.makeConstraints { sticky in
+            sticky.leading.trailing.equalToSuperview()
+            sticky.height.equalTo(50).priority(.high)
+            self.stickyCategoriesTopConstraint = sticky.top.equalTo(view.safeAreaLayoutGuide).constraint
         }
         
         
@@ -115,6 +157,43 @@ final class HomeViewController: UIViewController, HomeViewProtocol {
 
     func updateCity(name: String) {
         cityLabel.text = "\(name) ▼"
+    }
+    
+        func updateStickyCategories(offset: CGFloat) {
+        let threshold = bannerCollectionView.frame.maxY - view.safeAreaInsets.top
+            
+            guard offset > 0 else{
+                stickyCategoriesContainer.isHidden = true
+                return
+            }
+        
+        UIView.animate(withDuration: 0.25, delay: 0, options: [.allowUserInteraction, .curveEaseInOut], animations: {
+            if offset >= threshold {
+                self.stickyCategoriesContainer.isHidden = false
+                self.stickyCategoriesTopConstraint?.update(offset: 0)
+                
+                if self.categoryCollectionView.superview != self.stickyCategoriesContainer {
+                    self.originalCategoriesFrame = self.categoryCollectionView.frame
+                    self.stickyCategoriesContainer.addSubview(self.categoryCollectionView)
+                    self.categoryCollectionView.snp.remakeConstraints {
+                        $0.edges.equalToSuperview().inset(UIEdgeInsets(top: 0, left: 20, bottom: 0, right: 20))
+                    }
+                    self.view.layoutIfNeeded()
+                }
+            } else {
+                self.stickyCategoriesContainer.isHidden = true
+                
+                if self.categoryCollectionView.superview != self.view {
+                    self.view.addSubview(self.categoryCollectionView)
+                    self.categoryCollectionView.snp.remakeConstraints {
+                        $0.top.equalTo(self.bannerCollectionView.snp.bottom).offset(20)
+                        $0.leading.trailing.equalToSuperview().inset(20)
+                        $0.height.equalTo(50)
+                    }
+                    self.view.layoutIfNeeded()
+                }
+            }
+        })
     }
     
     func reloadCategories() {

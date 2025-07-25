@@ -17,26 +17,23 @@ final class HomePresenter: HomePresenterProtocol {
     private let categoryAPI: CategoryAPIProtocol
     private(set) var categories: [CategoryModel] = []
     private(set) var selectedIndex: Int = 0
+    private(set) var subMenus: [String: [Dish]] = [:]
     
     private let availableCities = ["Москва", "Санкт-Петербург", "Казань", "Новосибирск"]
     private let banners: [Banner] = [
         Banner(imageName: "first"),
         Banner(imageName: "second2"),
-        Banner(imageName: "third")
+        Banner(imageName: "third"),
+        Banner(imageName: "four")
     ]
     
-    // Инициализатор без параметров, где создаём categoryAPI внутри
     init(view: HomeViewProtocol? = nil, router: HomeRouterProtocol? = nil) {
         self.view = view
         self.router = router
-        // Создаем categoryAPI тут сами, чтобы не тащить из вне
-        let networkService = NetworkService() // или твоя реализация
+        let networkService = NetworkService() 
         self.categoryAPI = CategoryAPI(networkService: networkService)
         
-        // Можно сразу загрузить категории (если нужно)
         fetchCategories()
-        
-        // Можно грузить выбранный индекс и категории из UserDefaults или из дефолта
         selectedIndex = 0
         categories = []
     }
@@ -66,6 +63,25 @@ final class HomePresenter: HomePresenterProtocol {
             }
         }
     }
+    
+    func fetchSubMenu(for category: CategoryModel, completion: @escaping () -> Void) {
+        categoryAPI.fetchSubMenu(menuID: category.menuID) { [weak self] result in
+            switch result {
+            case .success(let dishes):
+                self?.subMenus[category.menuID] = dishes
+                DispatchQueue.main.async {
+                    completion()
+                }
+            case .failure(let error):
+                print("Ошибка загрузки подменю: \(error)")
+            }
+        }
+    }
+    
+    func getDishes(for menuID: String) -> [Dish] {
+        return subMenus[menuID] ?? []
+    }
+
     
     func didTapCitySelection() {
         router?.showCitySelection(cities: availableCities) { [weak self] selectedCity in

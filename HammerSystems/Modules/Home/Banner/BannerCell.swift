@@ -6,7 +6,7 @@
 //
 
 import UIKit
-
+import SnapKit
 
 final class BannerCell: UICollectionViewCell {
     private let imageView = UIImageView()
@@ -16,9 +16,11 @@ final class BannerCell: UICollectionViewCell {
         contentView.addSubview(imageView)
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
+        imageView.layer.cornerRadius = 10
+        
 
         imageView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
+            make.edges.equalToSuperview().inset(10)
         }
     }
 
