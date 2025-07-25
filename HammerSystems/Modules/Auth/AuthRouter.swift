@@ -10,10 +10,16 @@ import UIKit
 
 
 final class AuthRouter: AuthRouterProtocol  {
-    var viewController: UIViewController?
+   weak var viewController: UIViewController?
     
     func showHomeScreen() {
-        let homeVC = HomeBuilder.build(showLoginSuccessBanner: true)
-        viewController?.navigationController?.pushViewController(homeVC, animated: true)
+        guard let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let window = scene.windows.first else { return }
+        
+        let tabBar = MainTabBarController()
+        
+        UIView.transition(with: window, duration: 0.3, options: .transitionFlipFromRight, animations: {
+            window.rootViewController = tabBar
+        })
     }
 }
