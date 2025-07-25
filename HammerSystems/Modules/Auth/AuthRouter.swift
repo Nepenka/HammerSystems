@@ -13,7 +13,7 @@ final class AuthRouter: AuthRouterProtocol  {
     var viewController: UIViewController?
     
     func showHomeScreen() {
-        let homeVC = HomeBuilder.build()
+        let homeVC = HomeBuilder.build(showLoginSuccessBanner: true)
         viewController?.navigationController?.pushViewController(homeVC, animated: true)
     }
 }
